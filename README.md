@@ -1,105 +1,109 @@
+# ngx-feature-flags
 
+> The feature flag library for Angular
 
-# NgxFeatureFlags
+## Installation
 
-This project was generated using [Nx](https://nx.dev).
+First you need to install the npm module:
 
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
+```
+npm install ngx-feature-flags --save
+```
 
-🔎 **Smart, Fast and Extensible Build System**
+## Usage
 
-## Quick Start & Documentation
+#### 1. Import the `FeatureFlagModule`:
 
-[Nx Documentation](https://nx.dev/getting-started/intro)
+You have to import `FeatureFlagModule.forRoot()` in the root NgModule of your application.
 
-[Mental model is a good starting point for those who like to understand things theoretically first.](https://nx.dev/concepts/mental-model)
+The [`forRoot`](https://angular.io/api/router/RouterModule#forroot) static method is a convention that provides and configures services at the same time.
+Make sure you only call this method in the root module of your application, most of the time called `AppModule`.
+This method allows you to configure the `FeatureFlagModule` by specifying a loader.
 
-[Interactive Tutorial](https://nx.dev/getting-started/angular-tutorial)
+```ts
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { FeatureFlagModule } from '@ngx-translate/core';
 
-## Adding capabilities to your workspace
+@NgModule({
+  imports: [BrowserModule, FeatureFlagModule.forRoot()],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
 
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
+##### SharedModule
 
-These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.
+If you use a [`SharedModule`](https://angular.io/guide/sharing-ngmodules) that you import in multiple other feature modules,
+you can export the `FeatureFlagModule` to make sure you don't have to import it in every module.
 
-Below are our core plugins:
+```ts
+@NgModule({
+  exports: [CommonModule, FeatureFlagModule],
+})
+export class SharedModule {}
+```
 
-- [Angular](https://angular.io)
-  - `ng add @nrwl/angular`
-- [React](https://reactjs.org)
-  - `ng add @nrwl/react`
-- Web (no framework frontends)
-  - `ng add @nrwl/web`
-- [Nest](https://nestjs.com)
-  - `ng add @nrwl/nest`
-- [Express](https://expressjs.com)
-  - `ng add @nrwl/express`
-- [Node](https://nodejs.org)
-  - `ng add @nrwl/node`
+> Note: Never call a `forRoot` static method in the `SharedModule`. You might end up with different instances of the service in your injector tree. But you can use `forChild` if necessary.
 
-There are also many [community plugins](https://nx.dev/community) you could add.
+##### Lazy loaded modules
 
-## Generate an application
+When you lazy load a module, you should use the `forChild` static method to import the `FeatureFlagModule`.
 
-Run `ng g @nrwl/angular:app my-app` to generate an application.
+Since lazy loaded modules use a different injector from the rest of your application, you can configure them separately with a different loader.
 
-> You can use any of the plugins above to generate applications as well.
+```ts
+@NgModule({
+  imports: [
+    FeatureFlagModule.forChild({
+      loader: { provide: FeatureFlagLoader, useClass: CustomLoader },
+    }),
+  ],
+})
+export class LazyLoadedModule {}
+```
 
-When using Nx, you can create multiple applications and libraries in the same workspace.
+##### AoT
 
-## Generate a library
+If you want to configure a custom `FeatureFlagLoader` while using [AoT compilation](https://angular.io/docs/ts/latest/cookbook/aot-compiler.html) or [Ionic](http://ionic.io/), you must use an exported function instead of an inline function.
 
-Run `ng g @nrwl/angular:lib my-lib` to generate a library.
+```ts
+export function createFeatureFlagLoader(http: HttpClient) {
+  return new FeatureFlagHttpLoader(http, './assets/feature-flags.json');
+}
 
-> You can also use any of the plugins above to generate libraries as well.
+@NgModule({
+  imports: [
+    BrowserModule,
+    HttpClientModule,
+    FeatureFlagModule.forRoot({
+      loader: {
+        provide: FeatureFlagLoader,
+        useFactory: createFeatureFlagLoader,
+        deps: [HttpClient],
+      },
+    }),
+  ],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
 
-Libraries are shareable across libraries and applications. They can be imported from `@ngx-feature-flags/mylib`.
+#### 2. Use the service, or the directive:
 
-## Development server
+You can either use the `FeatureFlagService`, or the `FeatureFlagDirective` to get your feature flag values.
 
-Run `ng serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
+With the **service**, it looks like this:
 
-## Code scaffolding
+```ts
+featureFlag.isEnabled$('FeatureA').subscribe((res: string) => {
+  console.log(res);
+  //=> 'true'
+});
+```
 
-Run `ng g component my-component --project=my-app` to generate a new component.
+This is how you use the **directive**:
 
-## Build
-
-Run `ng build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test my-app` to execute the unit tests via [Jest](https://jestjs.io).
-
-Run `nx affected:test` to execute the unit tests affected by a change.
-
-## Running end-to-end tests
-
-Run `ng e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
-
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
-
-## Understand your workspace
-
-Run `nx graph` to see a diagram of the dependencies of your projects.
-
-## Further help
-
-Visit the [Nx Documentation](https://nx.dev/angular) to learn more.
-
-
-
-
-
-
-## ☁ Nx Cloud
-
-### Distributed Computation Caching & Distributed Task Execution
-
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-cloud-card.png"></p>
-
-Nx Cloud pairs with Nx in order to enable you to build and test code more rapidly, by up to 10 times. Even teams that are new to Nx can connect to Nx Cloud and start saving time instantly.
-
-Teams using Nx gain the advantage of building full-stack applications with their preferred framework alongside Nx’s advanced code generation and project dependency graph, plus a unified experience for both frontend and backend developers.
-
-Visit [Nx Cloud](https://nx.app/) to learn more.
+```html
+<div *featureFlag="'FeatureA'"></div>
+```
