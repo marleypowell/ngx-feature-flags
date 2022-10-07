@@ -1,0 +1,43 @@
+{
+  "name": "ngx-feature-flags",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "libs/ngx-feature-flags/src",
+  "prefix": "ngx-feature-flags",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:package",
+      "outputs": ["dist/libs/ngx-feature-flags"],
+      "options": {
+        "project": "libs/ngx-feature-flags/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/ngx-feature-flags/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/ngx-feature-flags/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/ngx-feature-flags"],
+      "options": {
+        "jestConfig": "libs/ngx-feature-flags/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/ngx-feature-flags/**/*.ts",
+          "libs/ngx-feature-flags/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": []
+}

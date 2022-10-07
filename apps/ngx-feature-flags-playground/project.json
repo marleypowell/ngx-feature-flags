@@ -1,0 +1,95 @@
+{
+  "name": "ngx-feature-flags-playground",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/ngx-feature-flags-playground/src",
+  "prefix": "ngx-feature-flags",
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/ngx-feature-flags-playground",
+        "index": "apps/ngx-feature-flags-playground/src/index.html",
+        "main": "apps/ngx-feature-flags-playground/src/main.ts",
+        "polyfills": "apps/ngx-feature-flags-playground/src/polyfills.ts",
+        "tsConfig": "apps/ngx-feature-flags-playground/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          "apps/ngx-feature-flags-playground/src/favicon.ico",
+          "apps/ngx-feature-flags-playground/src/assets"
+        ],
+        "styles": ["apps/ngx-feature-flags-playground/src/styles.scss"],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "fileReplacements": [
+            {
+              "replace": "apps/ngx-feature-flags-playground/src/environments/environment.ts",
+              "with": "apps/ngx-feature-flags-playground/src/environments/environment.prod.ts"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "browserTarget": "ngx-feature-flags-playground:build:production"
+        },
+        "development": {
+          "browserTarget": "ngx-feature-flags-playground:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "ngx-feature-flags-playground:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "apps/ngx-feature-flags-playground/**/*.ts",
+          "apps/ngx-feature-flags-playground/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/ngx-feature-flags-playground"],
+      "options": {
+        "jestConfig": "apps/ngx-feature-flags-playground/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
