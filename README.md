@@ -96,7 +96,7 @@ You can either use the `FeatureFlagService`, or the `FeatureFlagDirective` to ge
 With the **service**, it looks like this:
 
 ```ts
-featureFlag.isEnabled$('FeatureA').subscribe((res: string) => {
+featureFlag.isEnabled$('FeatureA').subscribe((res: boolean) => {
   console.log(res);
   //=> 'true'
 });
