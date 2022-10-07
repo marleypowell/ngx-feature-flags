@@ -1,1 +1,29 @@
-<ngx-feature-flags-nx-welcome></ngx-feature-flags-nx-welcome>
+<h1>ngx-feature-flags</h1>
+
+<h2>Feature Flags</h2>
+<pre>{{ featureFlags$ | async | json }}</pre>
+
+<table>
+  <tr>
+    <th></th>
+    <th>Feature Flag</th>
+    <th>Enabled</th>
+    <th>Content</th>
+  </tr>
+  <tr *ngFor="let featureFlag of featureFlags$ | async">
+    <td>
+      <input
+        type="checkbox"
+        [checked]="featureFlag[1]"
+        (change)="updateFeatureFlag(featureFlag[0], $event)"
+      />
+    </td>
+    <td>{{ featureFlag[0] }}</td>
+    <td>{{ featureFlag[1] }}</td>
+    <td>
+      <ng-container *featureFlag="featureFlag[0]">
+        <p>{{ featureFlag[0] }} is enabled!</p>
+      </ng-container>
+    </td>
+  </tr>
+</table>
